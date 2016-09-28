@@ -13023,6 +13023,7 @@ var $jsonpCallbacksProvider = /** @this */ function() {
 var PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
 var $locationMinErr = minErr('$location');
+var originalLocation;
 
 
 /**
@@ -13046,7 +13047,7 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
   var parsedUrl = urlResolve(absoluteUrl);
 
   locationObj.$$protocol = parsedUrl.protocol;
-  locationObj.$$host = parsedUrl.hostname;
+  locationObj.$$host = originalLocation || parsedUrl.hostname;
   locationObj.$$port = toInt(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 }
 
@@ -13082,7 +13083,8 @@ function stripDanaInfo (url) {
   var isDanaInfo = url.indexOf('DanaInfo=') > -1;
 
   if (isDanaInfo) {
-    return url.replace('DanaInfo=', '').split(',')[1];
+    originalLocation = url.replace('DanaInfo=', '').split(',')[1];
+    return originalLocation;
   }
 
   return url
