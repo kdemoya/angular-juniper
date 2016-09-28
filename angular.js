@@ -13064,9 +13064,9 @@ function parseAppUrl(relativeUrl, locationObj) {
 
   /**
    * PATCH FOR JUNIPER SSL:
-   * Set proper host when coming from .
+   * Set proper host when coming from Juniper.
    */
-  var isDanaInfo = locationObj.$$path.indexOf('DanaInfo=') === -1;
+  var isDanaInfo = locationObj.$$path.indexOf('DanaInfo=') > -1;
   if (isDanaInfo) {
     locationObj.$$host = locationObj.$$path.replace('DanaInfo=', '').split(',')[1];
     locationObj.$$path = '';
