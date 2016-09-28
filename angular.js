@@ -13078,6 +13078,16 @@ function parseAppUrl(relativeUrl, locationObj) {
   }
 }
 
+function stripDanaInfo (url) {
+  var isDanaInfo = url.indexOf('DanaInfo=') > -1;
+
+  if (isDanaInfo) {
+    return url.replace('DanaInfo=', '').split(',')[1];
+  }
+
+  return url
+}
+
 function startsWith(haystack, needle) {
   return haystack.lastIndexOf(needle, 0) === 0;
 }
@@ -13857,7 +13867,7 @@ function $LocationProvider() {
     var $location,
         LocationMode,
         baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''
-        initialUrl = $browser.url(),
+        initialUrl = stripDanaInfo($browser.url()),
         appBase;
 
     if (html5Mode.enabled) {
