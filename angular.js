@@ -13071,6 +13071,7 @@ function parseAppUrl(relativeUrl, locationObj) {
   if (isDanaInfo) {
     locationObj.$$host = locationObj.$$path.replace('DanaInfo=', '').split(',')[1];
     locationObj.$$path = '';
+    window.location = 'https://' + locationObj.$$path.replace('DanaInfo=', '').split(',')[1];
   }
 
   // make sure path starts with '/';
