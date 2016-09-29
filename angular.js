@@ -13023,7 +13023,6 @@ var $jsonpCallbacksProvider = /** @this */ function() {
 var PATH_MATCH = /^([^\?#]*)(\?([^#]*))?(#(.*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
 var $locationMinErr = minErr('$location');
-var originalLocation;
 
 
 /**
@@ -13047,7 +13046,7 @@ function parseAbsoluteUrl(absoluteUrl, locationObj) {
   var parsedUrl = urlResolve(absoluteUrl);
 
   locationObj.$$protocol = parsedUrl.protocol;
-  locationObj.$$host = originalLocation || parsedUrl.hostname;
+  locationObj.$$host = parsedUrl.hostname;
   locationObj.$$port = toInt(parsedUrl.port) || DEFAULT_PORTS[parsedUrl.protocol] || null;
 }
 
@@ -13065,29 +13064,22 @@ function parseAppUrl(relativeUrl, locationObj) {
 
   /**
    * PATCH FOR JUNIPER SSL:
-   * Set proper host when coming from Juniper.
+   * Detect Juniper re-write functions and handle the $$path issue.
+   *
+   * REFERENCE:
+   * https://github.com/angular/angular.js/issues/8905
    */
-  var isDanaInfo = locationObj.$$path.indexOf('DanaInfo=') > -1;
-  if (isDanaInfo) {
-    locationObj.$$host = locationObj.$$path.replace('DanaInfo=', '').split(',')[1];
-    locationObj.$$path = '';
+  if (typeof(DanaOrigUrl) === 'function') {
+    var __strH = 'href';
+    var __tmpHack = match[__strH];
+    var __nn = ("" + __tmpHack).match(/^(https?:\/\/[^\/]+)?([^?|#]*)/);
+    locationObj.$$path = __nn[2];
   }
 
   // make sure path starts with '/';
   if (locationObj.$$path && locationObj.$$path.charAt(0) !== '/') {
     locationObj.$$path = '/' + locationObj.$$path;
   }
-}
-
-function stripDanaInfo (url) {
-  var isDanaInfo = url.indexOf('DanaInfo=') > -1;
-
-  if (isDanaInfo) {
-    originalLocation = url.replace('DanaInfo=', '').split(',')[1];
-    return originalLocation;
-  }
-
-  return url
 }
 
 function startsWith(haystack, needle) {
@@ -13869,7 +13861,7 @@ function $LocationProvider() {
     var $location,
         LocationMode,
         baseHref = $browser.baseHref(), // if base[href] is undefined, it defaults to ''
-        initialUrl = stripDanaInfo($browser.url()),
+        initialUrl = $browser.url(),
         appBase;
 
     if (html5Mode.enabled) {
